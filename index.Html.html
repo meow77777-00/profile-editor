@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>드림 프로필 정리기 (심화 확장판)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F6F8;
+  --surface: #ffffff;
+  --surface2: #F8F9FA;
+  --border: #E5E8EB;
+  --border2: #F1F3F5;
+  --text: #191F28;
+  --text2: #4E5968;
+  --text3: #8B95A1;
+  --dream: #FF8FA3;
+  --dream-bg: #FFF0F3;
+  --canon: #7DA2FF;
+  --canon-bg: #F0F4FF;
+  --accent: #3182F6;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.04);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── 레이아웃 (Flexbox 기반 전체 레이아웃) ── */
+html, body { 
+  height: 100%; 
+  overflow: hidden; 
+  font-family: 'Noto Sans KR', sans-serif; 
+  background: var(--bg); 
+  color: var(--text); 
+  display: flex; 
+  flex-direction: column; 
+}
+
+.app-header { 
+  background: var(--surface); 
+  border-bottom: 1px solid var(--border); 
+  padding: 16px 24px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  flex-shrink: 0; 
+  z-index: 200; 
+}
+.app-header h1 { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+.app-header p { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+.app-body { 
+  flex: 1; 
+  display: flex; 
+  overflow: hidden; 
+}
+
+/* ── 폼 패널 ── */
+.form-panel { 
+  width: 360px; 
+  flex-shrink: 0; 
+  background: var(--surface); 
+  border-right: 1px solid var(--border); 
+  padding: 24px; 
+  padding-bottom: 60px; 
+  overflow-y: auto; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 16px; 
+}
+.form-panel::-webkit-scrollbar { width: 6px; }
+.form-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+
+.radio-group { display: flex; gap: 8px; background: var(--surface2); padding: 4px; border-radius: 14px; border: 1px solid var(--border); flex-shrink: 0; }
+.radio-group input[type="radio"] { display: none; }
+.radio-label { flex: 1; text-align: center; padding: 10px 4px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text3); transition: all 0.2s; }
+#target1:checked ~ .radio-label[for="target1"] { background: var(--surface); color: var(--dream); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+#target2:checked ~ .radio-label[for="target2"] { background: var(--surface); color: var(--canon); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 11.5px; font-weight: 700; color: var(--text2); margin-bottom: 6px; }
+.form-hint { font-size: 11px; color: var(--text3); margin-top: 4px; line-height: 1.4; }
+input[type="text"], textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; background: var(--surface2); color: var(--text); outline: none; transition: 0.2s; }
+input[type="text"]:focus, textarea:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px rgba(49,130,246,0.1); }
+textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+
+.form-section { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; flex-shrink: 0; }
+.form-section summary { padding: 12px 16px; background: var(--surface2); font-size: 12.5px; font-weight: 700; color: var(--text2); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+.form-section summary::-webkit-details-marker { display: none; }
+.form-section summary::after { content: '▾'; transition: 0.3s; color: var(--text3); }
+.form-section[open] summary::after { transform: rotate(-180deg); }
+.form-section[open] summary { border-bottom: 1px solid var(--border); }
+.form-section-body { padding: 16px; background: var(--surface); }
+
+.btn { width: 100%; padding: 12px 16px; border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
+.btn-primary { background: var(--text); color: #fff; margin-top: 8px; }
+.btn-primary:hover { background: #333D4B; }
+.btn-add { background: var(--surface2); border: 1px dashed var(--border); color: var(--text2); margin-top: 8px; font-size: 12px; }
+.btn-add:hover { background: var(--border2); }
+.btn-del { background: #FFF0F3; color: #FF8FA3; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600; margin-top: 8px; width: 100%; }
+.btn-export { background: linear-gradient(135deg, #FF8FA3, #7DA2FF); color: #fff; padding: 14px 16px; margin-top: 10px; }
+
+.rel-input-box { border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 12px; background: var(--surface2); }
+.rel-input-row { display: flex; gap: 6px; margin-bottom: 6px; }
+
+/* ── 프리뷰 ── */
+.preview-panel { flex: 1; padding: 40px; overflow-y: auto; height: 100%; }
+.profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 32px; max-width: 1000px; margin: 0 auto; }
+.profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); padding: 32px; position: relative; }
+.card-label { position: absolute; top: 24px; right: 24px; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+.card-dream .card-label { background: var(--dream-bg); color: var(--dream); }
+.card-canon .card-label { background: var(--canon-bg); color: var(--canon); }
+.profile-name { font-size: 24px; font-weight: 700; margin-bottom: 24px; color: var(--text); padding-right: 60px; line-height: 1.3; }
+.profile-name-desc { font-size: 13.5px; color: var(--text3); font-weight: 500; margin-top: 6px; line-height: 1.5; }
+.profile-img { width: 100%; height: 300px; object-fit: cover; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); margin-bottom: 24px; }
+.cv-sect-title { font-size: 16px; font-weight: 700; color: var(--text); margin: 32px 0 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; list-style: none; }
+.cv-sect-title::-webkit-details-marker { display: none; }
+.cv-sect-title::before { content: ''; display: inline-block; width: 4px; height: 16px; background: var(--text3); border-radius: 2px; flex-shrink: 0; }
+.card-dream .cv-sect-title::before { background: var(--dream); }
+.card-canon .cv-sect-title::before { background: var(--canon); }
+.cv-sect-title .sect-arrow { margin-left: auto; font-size: 14px; color: var(--text3); transition: transform 0.25s; }
+.cv-sect-toggle { margin-top: 32px; }
+.cv-sect-toggle > summary { margin-top: 0; }
+.cv-sect-toggle[open] > summary .sect-arrow { transform: rotate(-180deg); }
+.cv-sect-toggle > summary { margin-bottom: 12px; }
+.sect-note { font-size: 11.5px; color: var(--text3); line-height: 1.55; margin-bottom: 12px; }
+.rep-appearance { font-size: 14px; line-height: 1.6; color: var(--text2); margin-bottom: 18px; white-space: pre-wrap; }
+
+/* ── 자세한 외관 토글 ── */
+.detail-toggle { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); margin-bottom: 24px; }
+.detail-toggle summary { padding: 12px 16px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text2); display: flex; justify-content: space-between; list-style: none; }
+.detail-toggle summary::-webkit-details-marker { display: none; }
+.detail-toggle summary::after { content: '▾'; transition: 0.3s; }
+.detail-toggle[open] summary::after { transform: rotate(-180deg); }
+.detail-toggle[open] { background: var(--surface); }
+.detail-content { padding: 16px; font-size: 13.5px; line-height: 1.7; color: var(--text2); white-space: pre-wrap; }
+.det-app-img { width: 100%; max-height: 280px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 12px; display: block; }
+
+/* ── 기본 정보 표 ── */
+.info-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.info-item { display: flex; font-size: 13.5px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
+.info-key { width: 75px; color: var(--text3); font-weight: 600; flex-shrink: 0; }
+.info-val { color: var(--text); font-weight: 500; white-space: pre-line; }
+
+/* ── 목소리 버튼 ── */
+.audio-section { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; justify-content: flex-end; }
+.voice-comment-text { font-size: 12.5px; color: var(--text3); line-height: 1.5; text-align: right; flex: 1; }
+.voice-btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 50px; background: var(--surface2); border: 1px solid var(--border); color: var(--text2); font-size: 12.5px; font-weight: 600; cursor: pointer; flex-shrink: 0; transition: background 0.3s ease, color 0.3s ease, transform 0.15s ease, box-shadow 0.3s ease; }
+.voice-btn:active { transform: scale(0.94); }
+.voice-btn .v-icon { font-size: 16px; transition: transform 0.3s ease; }
+.voice-btn.playing .v-icon { animation: pulse-mic 1.2s ease-in-out infinite; }
+.card-dream .voice-btn.playing { background: var(--dream-bg); color: var(--dream); border-color: #FFD6DF; }
+.card-canon .voice-btn.playing { background: var(--canon-bg); color: var(--canon); border-color: #C9D9FF; }
+@keyframes pulse-mic { 0%,100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+
+/* ── 성격 ── */
+.flat-box { background: var(--border2); color: var(--text); padding: 14px 16px; border-radius: var(--radius-sm); margin-bottom: 14px; font-size: 13px; font-weight: 500; text-align: center; word-break: keep-all; }
+.cv-text { font-size: 13.5px; line-height: 1.65; color: var(--text2); margin-bottom: 14px; white-space: pre-wrap; word-break: keep-all; }
+.time-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 6px; background: #E5E8EB; color: var(--text2); margin-bottom: 8px; }
+
+/* ── 키워드 알약 ── */
+.keyword-pills { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
+.keyword-pill { display: inline-block; padding: 5px 13px; border-radius: 50px; font-size: 12.5px; font-weight: 600; }
+.card-dream .keyword-pill { background: var(--dream-bg); color: var(--dream); }
+.card-canon .keyword-pill { background: var(--canon-bg); color: var(--canon); }
+
+/* ── 내면 서술 ── */
+.inner-section { margin-bottom: 14px; }
+.inner-section > summary { list-style: none; cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--text3); letter-spacing: 0.3px; padding: 2px 0; margin-bottom: 6px; }
+.inner-section > summary::-webkit-details-marker { display: none; }
+.inner-section > summary .inner-arrow { font-size: 10px; transition: transform 0.25s; }
+.inner-section[open] > summary .inner-arrow { transform: rotate(90deg); }
+.card-dream .inner-section > summary { color: var(--dream); }
+.card-canon .inner-section > summary { color: var(--canon); }
+.inner-body { font-size: 13.5px; line-height: 1.65; color: var(--text2); white-space: pre-wrap; padding-left: 2px; }
+
+/* ── 주의사항 ── */
+.caution-box { background: #FFF9E6; border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 14px; }
+.caution-box-title { font-size: 11px; font-weight: 700; color: #B8860B; letter-spacing: 0.8px; margin-bottom: 8px; }
+.caution-box-body { font-size: 13px; line-height: 1.65; color: #5C4400; white-space: pre-wrap; word-break: keep-all; }
+
+/* ── 관계성 ── */
+.rel-box { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; background: var(--surface); }
+.rel-head { display: flex; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed var(--border); }
+.rel-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); margin-right: 12px; flex-shrink: 0; background: var(--surface2); }
+.rel-head-info { display: flex; flex-direction: column; gap: 6px; }
+.rel-target-name { font-size: 14.5px; font-weight: 700; color: var(--text); }
+.rel-titles { display: flex; gap: 6px; flex-wrap: wrap; }
+.rel-title-badge { font-size: 11px; color: var(--text2); background: var(--surface2); padding: 3px 8px; border-radius: 6px; font-weight: 500; }
+.rel-summary { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 12px; line-height: 1.5; }
+.rel-arrow-row { display: flex; flex-direction: column; gap: 10px; }
+.rel-dir { font-size: 12.5px; line-height: 1.5; color: var(--text2); display: flex; gap: 8px; align-items: flex-start; }
+.rel-tag { font-size: 10px; font-weight: 700; color: #fff; background: var(--text3); padding: 3px 8px; border-radius: 4px; flex-shrink: 0; margin-top: 2px; letter-spacing: 0.3px; }
+.rel-detail { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); font-size: 13.5px; line-height: 1.65; color: var(--text2); white-space: pre-wrap; }
+
+/* ── 모달 ── */
+#exportModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000; padding:20px; }
+.modal-box { background: var(--surface); padding: 32px; border-radius: 24px; width: 100%; max-width: 700px; display: flex; flex-direction: column; }
+#exportCode { height: 280px; font-family: monospace; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; background: var(--surface2); resize: none; margin: 16px 0; }
+
+/* ── 반응형 (모바일 뷰어) ── */
+@media (max-width: 768px) {
+  html, body { height: auto; overflow: auto; display: block; }
+  .app-header { position: sticky; top: 0; }
+  .app-body { display: flex; flex-direction: column; overflow: visible; }
+  .form-panel { width: 100%; border-right: none; overflow-y: visible; padding-bottom: 24px; }
+  .preview-panel { padding: 16px; overflow-y: visible; }
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-card { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div>
+    <h1>드림 프로필 정리기 (심화 설정판)</h1>
+    <p>성격, 관계성, 기타 설정까지 완벽하게 기록하세요</p>
+  </div>
+</header>
+
+<div class="app-body">
+  <aside class="form-panel">
+    <div class="radio-group">
+      <input type="radio" name="profileTarget" id="target1" value="0" checked onchange="switchTarget()">
+      <label class="radio-label" for="target1">🌸 드림주</label>
+      <input type="radio" name="profileTarget" id="target2" value="1" onchange="switchTarget()">
+      <label class="radio-label" for="target2">📘 상대역</label>
+    </div>
+
+    <details class="form-section" open>
+      <summary>📌 1. 기본 외관 & 정보</summary>
+      <div class="form-section-body">
+        <div class="form-group">
+          <label class="form-label">이름</label>
+          <input type="text" id="pName" placeholder="캐릭터 이름">
+        </div>
+        <div class="form-group">
+          <label class="form-label">이름 설명 (선택)</label>
+          <input type="text" id="pNameDesc" placeholder="영문/한자 표기, 이름의 뜻 등">
+        </div>
+        <div class="form-group">
+          <label class="form-label">이미지 URL</label>
+          <input type="text" id="pImg" placeholder="https://...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">대표 외관 (본문 표시)</label>
+          <textarea id="pRepApp" placeholder="짧은 외관 첫인상"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">자세한 외관 (접기/펴기용)</label>
+          <textarea id="pDetApp" placeholder="흉터, 체형 등 상세 묘사"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">자세한 외관 이미지 URL (선택)</label>
+          <input type="text" id="pDetAppImg" placeholder="https://...">
+          <div class="form-hint">접기/펴기 안에 사진이 함께 표시됩니다.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">기본 정보 (리스트)</label>
+          <textarea id="pTable" placeholder="나이: 20세&#10;직업: 고등학생&#10;2학년 3반 (콜론 없이 줄바꿈하면 위 항목에 이어집니다)"></textarea>
+          <div class="form-hint">콜론(:)으로 항목 구분 · 콜론 없이 줄바꿈하면 위 항목 내용에 이어집니다.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">목소리 (드롭박스 링크)</label>
+          <input type="text" id="pVoice" placeholder="https://www.dropbox.com/...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">목소리 코멘트 (한 줄)</label>
+          <input type="text" id="pVoiceComment" placeholder="예: 낮고 차분한 목소리">
+        </div>
+      </div>
+    </details>
+
+    <details class="form-section">
+      <summary>📝 2. 캐릭터 소개 (선택)</summary>
+      <div class="form-section-body">
+        <div class="form-group">
+          <label class="form-label">섹션 설명 (작은 회색 글씨)</label>
+          <input type="text" id="pIntroNote" placeholder="예: 세계관 및 역할 요약">
+        </div>
+        <div class="form-group">
+          <label class="form-label">소개글 서술</label>
+          <textarea id="pIntro" placeholder="어떤 장르의 캐릭터인지, 작중 어떤 역할을 맡고 있는지 등 전반적인 소개를 자유롭게 적어주세요."></textarea>
+          <div class="form-hint">작성하지 않으면 본문에 표시되지 않습니다.</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="form-section">
+      <summary>💭 3. 성격</summary>
+      <div class="form-section-body">
+        <div class="form-group">
+          <label class="form-label">성격 섹션 설명 (작은 회색 글씨)</label>
+          <input type="text" id="pPersNote" placeholder="예: 이 서술은 참고용으로만 보시기 바랍니다.">
+        </div>
+        <div class="form-group">
+          <label class="form-label">납작캐해 (배경 박스)</label>
+          <input type="text" id="pPersFlat" placeholder="예: 다정한 척하는 통수캐">
+        </div>
+        <div class="form-group">
+          <label class="form-label">기본 성격 서술</label>
+          <textarea id="pPersDesc" placeholder="#까칠한 #독립적&#10;이 캐릭터는...&#10;&#10;#추가태그&#10;더 적고 싶은 설명..." style="min-height:90px;"></textarea>
+          <div class="form-hint">#키워드는 알약 태그로 변환 · 줄바꿈으로 태그-내용-태그 배치 가능</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">자세한 성격 서술 (카드에서 접기/펴기)</label>
+          <textarea id="pPersInner" placeholder="겉모습과 다른 진짜 내면..."></textarea>
+        </div>
+        <div class="form-group" style="padding-top:14px; border-top:1px dashed var(--border);">
+          <label class="form-label">⚠️ 캐해 시 주의사항</label>
+          <textarea id="pPersCaution" placeholder="- 절대 하지 않는 행동&#10;- 해석 시 주의할 점 등"></textarea>
+        </div>
+        <div class="form-group" style="padding-top:14px; border-top:1px dashed var(--border);">
+          <label class="form-label">특정 시점 성격</label>
+          <div id="timePersContainer"></div>
+          <button class="btn btn-add" onclick="addTimePers()">+ 특정 시점 추가</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="form-section">
+      <summary>💡 4. 기타 설정</summary>
+      <div class="form-section-body">
+        <div class="form-group">
+          <label class="form-label">섹션 설명 (작은 회색 글씨)</label>
+          <input type="text" id="pTriviaNote" placeholder="예: 공식 설정 외 개인 해석이 포함됩니다.">
+        </div>
+        <textarea id="pTrivia" placeholder="- 양손잡이이다.&#10;- 고양이를 두 마리 키운다."></textarea>
+      </div>
+    </details>
+
+    <details class="form-section">
+      <summary>🤝 5. 주변 인물 관계</summary>
+      <div class="form-section-body">
+        <div class="form-group">
+          <label class="form-label">섹션 설명 (작은 회색 글씨)</label>
+          <input type="text" id="pRelNote" placeholder="예: 캐해 기준 관계성입니다.">
+        </div>
+        <div id="relInputsContainer"></div>
+        <button class="btn btn-add" onclick="addRelInput()">+ 새로운 관계 추가</button>
+      </div>
+    </details>
+
+    <button class="btn btn-primary" onclick="saveForm(true)">적용하기 (미리보기 갱신)</button>
+    <button class="btn btn-export" onclick="openExport()">✨ 완성 코드 내보내기</button>
+
+  </aside>
+
+  <main class="preview-panel">
+    <div class="profile-grid" id="previewContainer"></div>
+  </main>
+</div>
+
+<div id="exportModal">
+  <div class="modal-box">
+    <h2>코드 복사하기</h2>
+    <p style="font-size:13px; color:var(--text3);">아래 코드를 복사하여 HTML 모드에 붙여넣으세요.</p>
+    <textarea id="exportCode" readonly></textarea>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-primary" id="copyBtn" style="flex:2; margin:0;" onclick="copyCode()">복사하기</button>
+      <button class="btn" style="flex:1; margin:0; background:var(--border2); color:var(--text2);" onclick="document.getElementById('exportModal').style.display='none'">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const defaultProfile = () => ({
+  name:"", nameDesc:"", type:"dream", img:"",
+  repApp:"", detApp:"", detAppImg:"", table:"", voice:"", voiceComment:"",
+  intro:"", introNote:"", 
+  personality:{ flat:"", desc:"", inner:"", caution:"", note:"", timeEntries:[] },
+  trivia:"", triviaNote:"", relNote:"", relations:[]
+});
+
+let profiles = [
+  { ...defaultProfile(), name:"이름 (드림주)", type:"dream" },
+  { ...defaultProfile(), name:"이름 (상대역)", type:"canon" }
+];
+let currentIdx = 0;
+
+function switchTarget() { saveForm(false); currentIdx = parseInt(document.querySelector('input[name="profileTarget"]:checked').value); loadForm(); }
+
+function loadForm() {
+  const p = profiles[currentIdx];
+  document.getElementById('pName').value = p.name;
+  document.getElementById('pNameDesc').value = p.nameDesc||"";
+  document.getElementById('pImg').value = p.img;
+  document.getElementById('pRepApp').value = p.repApp;
+  document.getElementById('pDetApp').value = p.detApp;
+  document.getElementById('pDetAppImg').value = p.detAppImg||"";
+  document.getElementById('pTable').value = p.table;
+  document.getElementById('pVoice').value = p.voice;
+  document.getElementById('pVoiceComment').value = p.voiceComment||"";
+  
+  document.getElementById('pIntro').value = p.intro||"";
+  document.getElementById('pIntroNote').value = p.introNote||"";
+
+  document.getElementById('pPersFlat').value = p.personality.flat;
+  document.getElementById('pPersDesc').value = p.personality.desc;
+  document.getElementById('pPersInner').value = p.personality.inner;
+  document.getElementById('pPersCaution').value = p.personality.caution||"";
+  document.getElementById('pPersNote').value = p.personality.note||"";
+  document.getElementById('pTrivia').value = p.trivia;
+  document.getElementById('pTriviaNote').value = p.triviaNote||"";
+  document.getElementById('pRelNote').value = p.relNote||"";
+  renderTimePers(); renderRelInputs();
+}
+
+function saveForm(doRender=false) {
+  const p = profiles[currentIdx];
+  p.name = document.getElementById('pName').value;
+  p.nameDesc = document.getElementById('pNameDesc').value;
+  p.img = document.getElementById('pImg').value;
+  p.repApp = document.getElementById('pRepApp').value;
+  p.detApp = document.getElementById('pDetApp').value;
+  p.detAppImg = document.getElementById('pDetAppImg').value;
+  p.table = document.getElementById('pTable').value;
+  p.voice = document.getElementById('pVoice').value;
+  p.voiceComment = document.getElementById('pVoiceComment').value;
+  
+  p.intro = document.getElementById('pIntro').value;
+  p.introNote = document.getElementById('pIntroNote').value;
+
+  p.personality.flat = document.getElementById('pPersFlat').value;
+  p.personality.desc = document.getElementById('pPersDesc').value;
+  p.personality.inner = document.getElementById('pPersInner').value;
+  p.personality.caution = document.getElementById('pPersCaution').value;
+  p.personality.note = document.getElementById('pPersNote').value;
+  p.trivia = document.getElementById('pTrivia').value;
+  p.triviaNote = document.getElementById('pTriviaNote').value;
+  p.relNote = document.getElementById('pRelNote').value;
+
+  p.personality.timeEntries = [];
+  document.querySelectorAll('#timePersContainer .rel-input-box').forEach((_,i)=>{
+    p.personality.timeEntries.push({ name:document.getElementById(`tName_${i}`).value, desc:document.getElementById(`tDesc_${i}`).value });
+  });
+  p.relations = [];
+  document.querySelectorAll('#relInputsContainer .rel-input-box').forEach((_,i)=>{
+    p.relations.push({ 
+      targetName:document.getElementById(`rName_${i}`).value, relImg:document.getElementById(`rImg_${i}`).value,
+      titleAtoB:document.getElementById(`rTitleAtoB_${i}`).value, titleBtoA:document.getElementById(`rTitleBtoA_${i}`).value,
+      summary:document.getElementById(`rSum_${i}`).value, 
+      aToB:document.getElementById(`rAtoB_${i}`).value, bToA:document.getElementById(`rBtoA_${i}`).value,
+      detail:document.getElementById(`rDetail_${i}`).value 
+    });
+  });
+  if (doRender) renderPreview();
+}
+
+function renderTimePers() {
+  const c = document.getElementById('timePersContainer'); c.innerHTML='';
+  profiles[currentIdx].personality.timeEntries.forEach((e,i)=>{
+    c.innerHTML += `<div class="rel-input-box" style="padding:10px;margin-bottom:8px;">
+      <input type="text" id="tName_${i}" placeholder="시점 이름 (예: 흑화 후)" value="${e.name}" style="margin-bottom:6px;font-weight:700;">
+      <textarea id="tDesc_${i}" placeholder="해당 시점의 성격 변화 서술" style="min-height:45px;margin-bottom:6px;">${e.desc}</textarea>
+      <button class="btn-del" onclick="removeTimePers(${i})">삭제</button>
+    </div>`;
+  });
+}
+function addTimePers(){saveForm(false);profiles[currentIdx].personality.timeEntries.push({name:"",desc:""});renderTimePers();}
+function removeTimePers(i){saveForm(false);profiles[currentIdx].personality.timeEntries.splice(i,1);renderTimePers();}
+
+function renderRelInputs() {
+  const c = document.getElementById('relInputsContainer'); c.innerHTML='';
+  profiles[currentIdx].relations.forEach((r,i)=>{
+    c.innerHTML += `<div class="rel-input-box"> 
+      <input type="text" id="rName_${i}" placeholder="대상 인물 이름" value="${r.targetName}" style="margin-bottom:6px;font-weight:700;"> 
+      <input type="text" id="rImg_${i}" placeholder="상대방 이미지 URL (선택)" value="${r.relImg||''}" style="margin-bottom:6px;"> 
+      <div class="rel-input-row"> 
+        <input type="text" id="rTitleAtoB_${i}" placeholder="내가 부르는 호칭" value="${r.titleAtoB||''}"> 
+        <input type="text" id="rTitleBtoA_${i}" placeholder="상대가 부르는 호칭" value="${r.titleBtoA||''}"> 
+      </div> 
+      <input type="text" id="rSum_${i}" placeholder="관계 요약" value="${r.summary}" style="margin-bottom:6px;"> 
+      <textarea id="rAtoB_${i}" placeholder="내가 생각하는 상대" style="min-height:45px;margin-bottom:6px;">${r.aToB}</textarea> 
+      <textarea id="rBtoA_${i}" placeholder="상대가 생각하는 나" style="min-height:45px;margin-bottom:6px;">${r.bToA}</textarea> 
+      <textarea id="rDetail_${i}" placeholder="관계 상세 서술 (선택) - 과거 서사나 관계성 변화 등을 자유롭게 적어주세요." style="min-height:60px;margin-bottom:6px;">${r.detail||''}</textarea>
+      <button class="btn-del" onclick="removeRelInput(${i})">삭제</button> 
+    </div>`;
+  });
+}
+function addRelInput(){saveForm(false);profiles[currentIdx].relations.push({targetName:"",relImg:"",titleAtoB:"",titleBtoA:"",summary:"",aToB:"",bToA:"", detail:""});renderRelInputs();}
+function removeRelInput(i){saveForm(false);profiles[currentIdx].relations.splice(i,1);renderRelInputs();}
+
+/* ── *텍스트* → 볼드 변환 ── */
+function boldify(text) {
+  if(!text) return '';
+  return text.replace(/\*([^*\n]+)\*/g, '<strong>$1</strong>');
+}
+
+/* ── 줄 단위 알약 파싱 ── */
+function parseKeywordPills(text) {
+  let html=''; let buf=[];
+  const flush=()=>{ const c=buf.join('\n').trim(); if(c) html+=`<div class="cv-text">${boldify(c.replace(/\n/g,'<br>'))}</div>`; buf=[]; };
+  text.split('\n').forEach(line=>{
+    const pills=[]; const cl=line.replace(/#(\S+)/g,(_,k)=>{pills.push(k);return '';}).trim();
+    if(pills.length){ flush(); html+=`<div class="keyword-pills">${pills.map(k=>`<span class="keyword-pill">${k}</span>`).join('')}</div>`; if(cl) buf.push(cl); }
+    else buf.push(line);
+  });
+  flush(); return html;
+}
+
+/* ── 기본 정보 리스트 ── */
+function generateListHTML(text) {
+  if(!text.trim()) return '';
+  const items=[];
+  text.split('\n').forEach(line=>{ const ci=line.indexOf(':');
+    if(ci>0) items.push({key:line.slice(0,ci).trim(), val:line.slice(ci+1).trim()});
+    else if(line.trim()&&items.length) items[items.length-1].val+='\n'+line.trim();
+  });
+  if(!items.length) return '';
+  return `<div class="info-list">${items.map(it=>`<div class="info-item"><span class="info-key">${it.key}</span><span class="info-val">${it.val}</span></div>`).join('')}</div>`;
+}
+
+function convertDropboxUrl(url){ if(!url) return ''; return url.replace('www.dropbox.com','dl.dropboxusercontent.com').replace('?dl=0','?raw=1'); }
+
+/* ── 목소리 토글 ── */
+function toggleAudio(btn, id) {
+  const audio = document.getElementById(id);
+  if (audio.paused) {
+    document.querySelectorAll('audio').forEach(a=>a.pause());
+    document.querySelectorAll('.voice-btn').forEach(b=>{ b.classList.remove('playing'); b.querySelector('.v-icon').className='ti ti-microphone v-icon'; });
+    audio.play(); btn.classList.add('playing');
+    btn.querySelector('.v-icon').className='ti ti-microphone-filled v-icon';
+  } else {
+    audio.pause(); btn.classList.remove('playing');
+    btn.querySelector('.v-icon').className='ti ti-microphone v-icon';
+  }
+}
+
+/* ── 프리뷰 렌더링 ── */
+function renderPreview() {
+  const container = document.getElementById('previewContainer');
+  container.innerHTML = '';
+  profiles.forEach((p,idx)=>{
+    if(!p.name) return;
+    const cls = p.type==='dream'?'card-dream':'card-canon';
+    const lbl = p.type==='dream'?'OC':'Canon';
+    let html = `<div class="profile-card ${cls}"><div class="card-label">${lbl}</div> <div class="profile-name">${p.name}${p.nameDesc?`<div class="profile-name-desc">${p.nameDesc}</div>`:''}</div>`;
+
+    if(p.img) html += `<img src="${p.img}" class="profile-img">`;
+    if(p.repApp) html += `<div class="rep-appearance">${boldify(p.repApp.replace(/\n/g,'<br>'))}</div>`;
+
+    if(p.detApp||p.detAppImg){
+      let dc = p.detAppImg?`<img src="${p.detAppImg}" class="det-app-img">`:'';
+      if(p.detApp) dc+=`<div class="detail-content">${p.detApp}</div>`;
+      html += `<details class="detail-toggle"><summary>자세한 외관 보기</summary>${dc}</details>`;
+    }
+
+    html += generateListHTML(p.table);
+
+    if(p.voice){
+      const uid='prev-audio-'+idx;
+      const onended=`this.closest('.audio-section').querySelector('.voice-btn').classList.remove('playing');this.closest('.audio-section').querySelector('.v-icon').className='ti ti-microphone v-icon';`;
+      html += `<div class="audio-section">
+        ${p.voiceComment?`<div class="voice-comment-text">${p.voiceComment}</div>`:''}
+        <div class="voice-btn" onclick="toggleAudio(this,'${uid}')"><i class="ti ti-microphone v-icon"></i><span class="v-text">voice</span></div>
+        <audio id="${uid}" src="${convertDropboxUrl(p.voice)}" onended="${onended}"></audio>
+      </div>`;
+    }
+
+    // 캐릭터 소개 섹션 렌더링 (선택)
+    if(p.intro){
+      html += `<details class="cv-sect-toggle" open><summary class="cv-sect-title">소개<span class="sect-arrow">▾</span></summary><div class="cv-sect-body">`;
+      if(p.introNote) html += `<div class="sect-note">${p.introNote}</div>`;
+      html += `<div class="cv-text">${boldify(p.intro.replace(/\n/g,'<br>'))}</div>`;
+      html += `</div></details>`;
+    }
+
+    const pr = p.personality;
+    const hasTimes = pr.timeEntries&&pr.timeEntries.length>0;
+    if(pr.flat||pr.desc||pr.inner||pr.caution||pr.note||hasTimes){
+      html += `<details class="cv-sect-toggle" open><summary class="cv-sect-title">성격<span class="sect-arrow">▾</span></summary><div class="cv-sect-body">`;
+      if(pr.note) html += `<div class="sect-note">${pr.note}</div>`;
+      if(pr.flat) html += `<div class="flat-box">${pr.flat}</div>`;
+      if(pr.desc) html += parseKeywordPills(pr.desc);
+      if(pr.inner){
+        html += `<details class="inner-section"><summary><span class="inner-arrow">▶</span> 자세한 성격 서술</summary><div class="inner-body">${boldify(pr.inner.replace(/\n/g,'<br>'))}</div></details>`;
+      }
+      if(pr.caution){
+        html += `<div class="caution-box"><div class="caution-box-title">⚠ 캐해 시 주의사항</div><div class="caution-box-body">${boldify(pr.caution.replace(/\n/g,'<br>'))}</div></div>`;
+      }
+      if(hasTimes){
+        pr.timeEntries.forEach(t=>{ if(t.name||t.desc) html+=`<div class="cv-text"><span class="time-badge">${t.name||"특정 시점"}</span><br>${boldify(t.desc)}</div>`; });
+      }
+      html += `</div></details>`;
+    }
+
+    if(p.trivia){
+      html+=`<details class="cv-sect-toggle" open><summary class="cv-sect-title">기타 설정<span class="sect-arrow">▾</span></summary><div class="cv-sect-body">${p.triviaNote?`<div class="sect-note">${p.triviaNote}</div>`:''}<div class="cv-text">${boldify(p.trivia.replace(/\n/g,'<br>'))}</div></div></details>`;
+    }
+
+    if(p.relations.length){
+      html+=`<details class="cv-sect-toggle" open><summary class="cv-sect-title">관계성<span class="sect-arrow">▾</span></summary><div class="cv-sect-body">${p.relNote?`<div class="sect-note">${p.relNote}</div>`:''}`;
+      p.relations.forEach(r=>{
+        html+=`<div class="rel-box"><div class="rel-head">${r.relImg?`<img src="${r.relImg}" class="rel-avatar">`:''}
+          <div class="rel-head-info"><div class="rel-target-name">${r.targetName||'이름 미상'}</div>
+          <div class="rel-titles">${r.titleAtoB?`<span class="rel-title-badge">나 ➔ 상대: ${r.titleAtoB}</span>`:''}${r.titleBtoA?`<span class="rel-title-badge" style="background:var(--canon-bg);color:var(--canon);">상대 ➔ 나: ${r.titleBtoA}</span>`:''}</div></div></div>
+          ${r.summary?`<div class="rel-summary">${boldify(r.summary)}</div>`:''}
+          <div class="rel-arrow-row">
+            ${r.aToB?`<div class="rel-dir"><span class="rel-tag">나 ➔ 상대</span><div>${boldify(r.aToB.replace(/\n/g,'<br>'))}</div></div>`:''}
+            ${r.bToA?`<div class="rel-dir"><span class="rel-tag" style="background:var(--accent);">상대 ➔ 나</span><div>${boldify(r.bToA.replace(/\n/g,'<br>'))}</div></div>`:''}
+          </div>
+          ${r.detail?`<div class="rel-detail">${boldify(r.detail.replace(/\n/g,'<br>'))}</div>`:''}
+        </div>`;
+      });
+      html+=`</div></details>`;
+    }
+    html+=`</div>`;
+    container.innerHTML+=html;
+  });
+}
+
+/* ── 내보내기 ── */
+function openExport() {
+  saveForm(true);
+  const css = `<style> @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap'); @import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css'); .pf-wrap{font-family:'Noto Sans KR',sans-serif;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:32px;max-width:1000px;margin:0 auto;box-sizing:border-box;} .pf-wrap *{box-sizing:border-box;text-indent:0;} .pf-card{background:#fff;border:1px solid #E5E8EB;border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,0.03);padding:32px;position:relative;word-break:keep-all;} .pf-label{position:absolute;top:24px;right:24px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;} .pf-dream .pf-label{background:#FFF0F3;color:#FF8FA3;}.pf-canon .pf-label{background:#F0F4FF;color:#7DA2FF;} .pf-name{font-size:24px;font-weight:700;color:#191F28;margin-bottom:24px;padding-right:60px;line-height:1.3;} .pf-name-desc{font-size:13.5px;color:#8B95A1;font-weight:500;margin-top:6px;line-height:1.5;} .pf-img{width:100%;max-height:350px;object-fit:cover;border-radius:12px;border:1px solid #E5E8EB;margin-bottom:24px;display:block;} .pf-rep{font-size:14px;line-height:1.6;color:#4E5968;margin-bottom:18px;white-space:pre-wrap;} .pf-details{border:1px solid #E5E8EB;border-radius:12px;background:#F8F9FA;margin-bottom:24px;} .pf-details summary{padding:12px 16px;font-size:13px;font-weight:600;cursor:pointer;color:#4E5968;list-style:none;display:flex;justify-content:space-between;} .pf-details summary::-webkit-details-marker{display:none;} .pf-details summary::after{content:'▾';transition:0.3s;} .pf-details[open] summary::after{transform:rotate(-180deg);} .pf-details[open]{background:#fff;} .pf-det-img{width:100%;max-height:280px;object-fit:cover;border-radius:8px;border:1px solid #E5E8EB;margin-bottom:12px;display:block;} .pf-content{padding:16px;font-size:13.5px;line-height:1.7;color:#4E5968;white-space:pre-wrap;} .pf-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;} .pf-item{display:flex;font-size:13.5px;padding-bottom:10px;border-bottom:1px dashed #E5E8EB;} .pf-item:last-child{border-bottom:none;padding-bottom:0;} .pf-key{width:75px;color:#8B95A1;font-weight:600;flex-shrink:0;} .pf-val{color:#191F28;font-weight:500;white-space:pre-line;} .pf-audio-section{display:flex;align-items:center;gap:12px;margin-bottom:24px;justify-content:flex-end;} .pf-voice-comment{font-size:12.5px;color:#8B95A1;line-height:1.5;text-align:right;flex:1;} .pf-voice-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:50px;background:#F8F9FA;border:1px solid #E5E8EB;color:#4E5968;font-size:12.5px;font-weight:600;cursor:pointer;flex-shrink:0;transition:background 0.3s,color 0.3s,transform 0.15s,box-shadow 0.3s;user-select:none;} .pf-voice-btn:active{transform:scale(0.94);} .pf-voice-btn .pf-vi{font-size:16px;transition:transform 0.3s;} .pf-voice-btn.playing .pf-vi{animation:pfpulse 1.2s ease-in-out infinite;} .pf-dream .pf-voice-btn.playing{background:#FFF0F3;color:#FF8FA3;border-color:#FFD6DF;} .pf-canon .pf-voice-btn.playing{background:#F0F4FF;color:#7DA2FF;border-color:#C9D9FF;} @keyframes pfpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.18);}} .pf-sect-title{font-size:16px;font-weight:700;color:#191F28;margin:0;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;list-style:none;} .pf-sect-title::-webkit-details-marker{display:none;} .pf-sect-title::before{content:'';display:inline-block;width:4px;height:16px;background:#8B95A1;border-radius:2px;flex-shrink:0;} .pf-dream .pf-sect-title::before{background:#FF8FA3;}.pf-canon .pf-sect-title::before{background:#7DA2FF;} .pf-sect-title .pf-sect-arrow{margin-left:auto;font-size:14px;color:#8B95A1;transition:transform 0.25s;} .pf-sect-toggle{margin-top:32px;}.pf-sect-toggle>summary{margin-bottom:12px;} .pf-sect-toggle[open]>summary .pf-sect-arrow{transform:rotate(-180deg);} .pf-sect-note{font-size:11.5px;color:#8B95A1;line-height:1.55;margin-bottom:12px;} .pf-flat-box{background:#F1F3F5;color:#191F28;padding:14px 16px;border-radius:12px;margin-bottom:14px;font-size:13px;font-weight:500;text-align:center;} .pf-text{font-size:13.5px;line-height:1.65;color:#4E5968;margin-bottom:14px;white-space:pre-wrap;} .pf-time-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:#E5E8EB;color:#4E5968;margin-bottom:8px;} .pf-keyword-pills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;} .pf-keyword-pill{display:inline-block;padding:5px 13px;border-radius:50px;font-size:12.5px;font-weight:600;} .pf-dream .pf-keyword-pill{background:#FFF0F3;color:#FF8FA3;}.pf-canon .pf-keyword-pill{background:#F0F4FF;color:#7DA2FF;} .pf-inner-section{margin-bottom:14px;} .pf-inner-section>summary{list-style:none;cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#8B95A1;letter-spacing:0.3px;padding:2px 0;margin-bottom:6px;} .pf-inner-section>summary::-webkit-details-marker{display:none;} .pf-inner-section>summary .pf-ia{font-size:10px;transition:transform 0.25s;} .pf-inner-section[open]>summary .pf-ia{transform:rotate(90deg);} .pf-dream .pf-inner-section>summary{color:#FF8FA3;}.pf-canon .pf-inner-section>summary{color:#7DA2FF;} .pf-inner-body{font-size:13.5px;line-height:1.65;color:#4E5968;white-space:pre-wrap;padding-left:2px;} .pf-caution-box{background:#FFF9E6;border-radius:12px;padding:14px 16px;margin-bottom:14px;} .pf-caution-title{font-size:11px;font-weight:700;color:#B8860B;letter-spacing:0.8px;margin-bottom:8px;} .pf-caution-body{font-size:13px;line-height:1.65;color:#5C4400;white-space:pre-wrap;word-break:keep-all;} .pf-rel-box{border:1px solid #E5E8EB;border-radius:12px;padding:16px;margin-bottom:12px;background:#fff;} .pf-rel-head{display:flex;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed #E5E8EB;} .pf-rel-avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid #E5E8EB;margin-right:12px;flex-shrink:0;background:#F8F9FA;} .pf-rel-info{display:flex;flex-direction:column;gap:6px;} .pf-rel-name{font-size:14.5px;font-weight:700;color:#191F28;} .pf-rel-titles{display:flex;gap:6px;flex-wrap:wrap;} .pf-rel-title-badge{font-size:11px;color:#4E5968;background:#F8F9FA;padding:3px 8px;border-radius:6px;font-weight:500;} .pf-rel-sum{font-size:13.5px;font-weight:600;color:#191F28;margin-bottom:12px;line-height:1.5;} .pf-rel-dir{font-size:12.5px;line-height:1.5;color:#4E5968;display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;} .pf-rel-dir:last-child{margin-bottom:0;} .pf-rel-tag{font-size:10px;font-weight:700;color:#fff;background:#8B95A1;padding:3px 8px;border-radius:4px;flex-shrink:0;margin-top:2px;letter-spacing:0.3px;} .pf-rel-detail{margin-top:12px;padding-top:12px;border-top:1px dashed #E5E8EB;font-size:13.5px;line-height:1.65;color:#4E5968;white-space:pre-wrap;} @media(max-width:768px){.pf-wrap{grid-template-columns:1fr;gap:24px;}.pf-card{padding:24px;}} </style>`;
+
+  let h = `<div class="pf-wrap">\n`;
+  profiles.forEach((p,idx)=>{
+    if(!p.name) return;
+    const tc=p.type==='dream'?'pf-dream':'pf-canon';
+    const lt=p.type==='dream'?'OC':'Canon';
+    h+=`  <div class="pf-card ${tc}">\n`;
+    h+=`    <div class="pf-label">${lt}</div>\n`;
+    h+=`    <div class="pf-name">${p.name}${p.nameDesc?`<div class="pf-name-desc">${p.nameDesc}</div>`:''}</div>\n`;
+    if(p.img) h+=`    <img src="${p.img}" class="pf-img">\n`;
+    if(p.repApp) h+=`    <div class="pf-rep">${boldify(p.repApp.replace(/\n/g,'<br>'))}</div>\n`;
+
+    if(p.detApp||p.detAppImg){
+      h+=`    <details class="pf-details">\n      <summary>자세한 외관 보기</summary>\n`;
+      if(p.detAppImg) h+=`      <img src="${p.detAppImg}" class="pf-det-img" style="margin:12px 16px 0;width:calc(100% - 32px);">\n`;
+      if(p.detApp) h+=`      <div class="pf-content">${p.detApp}</div>\n`;
+      h+=`    </details>\n`;
+    }
+
+    if(p.table.trim()){
+      h+=`    <div class="pf-list">\n`;
+      const items=[];
+      p.table.split('\n').forEach(ln=>{ const ci=ln.indexOf(':');
+        if(ci>0) items.push({key:ln.slice(0,ci).trim(),val:ln.slice(ci+1).trim()});
+        else if(ln.trim()&&items.length) items[items.length-1].val+='\n'+ln.trim();
+      });
+      items.forEach(it=>{ h+=`      <div class="pf-item"><span class="pf-key">${it.key}</span><span class="pf-val">${it.val}</span></div>\n`; });
+      h+=`    </div>\n`;
+    }
+
+    if(p.voice){
+      const uid='pf-'+Math.random().toString(36).substr(2,6);
+      const oe=`var btn=this.closest('.pf-audio-section').querySelector('.pf-voice-btn');btn.classList.remove('playing');btn.querySelector('.pf-vi').className='ti ti-microphone pf-vi';`;
+      h+=`    <div class="pf-audio-section">\n`;
+      if(p.voiceComment) h+=`      <div class="pf-voice-comment">${p.voiceComment}</div>\n`;
+      h+=`      <div class="pf-voice-btn" onclick="pfAudio(this,'${uid}')"><i class="ti ti-microphone pf-vi"></i><span class="pf-vt">voice</span></div>\n`;
+      h+=`      <audio id="${uid}" class="pf-at" src="${convertDropboxUrl(p.voice)}" onended="${oe}"></audio>\n`;
+      h+=`    </div>\n`;
+    }
+
+    // 캐릭터 소개 렌더링 (선택)
+    if(p.intro){
+      h+=`    <details class="pf-sect-toggle" open>\n      <summary class="pf-sect-title">소개<span class="pf-sect-arrow">▾</span></summary>\n`;
+      if(p.introNote) h+=`    <div class="pf-sect-note">${p.introNote}</div>\n`;
+      h+=`    <div class="pf-text">${boldify(p.intro.replace(/\n/g,'<br>'))}</div>\n    </details>\n`;
+    }
+
+    const pr=p.personality;
+    const hasTimes=pr.timeEntries&&pr.timeEntries.length>0;
+    if(pr.flat||pr.desc||pr.inner||pr.caution||pr.note||hasTimes){
+      h+=`    <details class="pf-sect-toggle" open>\n      <summary class="pf-sect-title">성격<span class="pf-sect-arrow">▾</span></summary>\n`;
+      if(pr.note) h+=`    <div class="pf-sect-note">${pr.note}</div>\n`;
+      if(pr.flat) h+=`    <div class="pf-flat-box">${pr.flat}</div>\n`;
+      if(pr.desc){
+        let tb=[]; const ft=()=>{ const c=tb.join('\n').trim(); if(c) h+=`    <div class="pf-text">${boldify(c.replace(/\n/g,'<br>'))}</div>\n`; tb=[]; };
+        pr.desc.split('\n').forEach(ln=>{ const pills=[]; const cl=ln.replace(/#(\S+)/g,(_,k)=>{pills.push(k);return '';}).trim();
+          if(pills.length){ ft(); h+=`    <div class="pf-keyword-pills">${pills.map(k=>`<span class="pf-keyword-pill">${k}</span>`).join('')}</div>\n`; if(cl) tb.push(cl); } else tb.push(ln);
+        }); ft();
+      }
+      if(pr.inner){
+        h+=`    <details class="pf-inner-section">\n      <summary><span class="pf-ia">▶</span> 자세한 성격 서술</summary>\n`;
+        h+=`      <div class="pf-inner-body">${boldify(pr.inner.replace(/\n/g,'<br>'))}</div>\n    </details>\n`;
+      }
+      if(pr.caution){
+        h+=`    <div class="pf-caution-box"><div class="pf-caution-title">⚠ 캐해 시 주의사항</div><div class="pf-caution-body">${boldify(pr.caution.replace(/\n/g,'<br>'))}</div></div>\n`;
+      }
+      if(hasTimes){
+        pr.timeEntries.forEach(t=>{ if(t.name||t.desc) h+=`    <div class="pf-text"><span class="pf-time-badge">${t.name||'특정 시점'}</span><br>${boldify(t.desc)}</div>\n`; });
+      }
+      h+=`    </details>\n`;
+    }
+
+    if(p.trivia){
+      h+=`    <details class="pf-sect-toggle" open>\n      <summary class="pf-sect-title">기타 설정<span class="pf-sect-arrow">▾</span></summary>\n`;
+      if(p.triviaNote) h+=`    <div class="pf-sect-note">${p.triviaNote}</div>\n`;
+      h+=`    <div class="pf-text">${boldify(p.trivia.replace(/\n/g,'<br>'))}</div>\n    </details>\n`;
+    }
+
+    if(p.relations.length){
+      h+=`    <details class="pf-sect-toggle" open>\n      <summary class="pf-sect-title">관계성<span class="pf-sect-arrow">▾</span></summary>\n`;
+      if(p.relNote) h+=`    <div class="pf-sect-note">${p.relNote}</div>\n`;
+      p.relations.forEach(r=>{
+        h+=`    <div class="pf-rel-box">\n      <div class="pf-rel-head">\n`;
+        if(r.relImg) h+=`        <img src="${r.relImg}" class="pf-rel-avatar">\n`;
+        h+=`        <div class="pf-rel-info"><div class="pf-rel-name">${r.targetName}</div><div class="pf-rel-titles">`;
+        if(r.titleAtoB) h+=`<span class="pf-rel-title-badge">나 ➔ 상대: ${r.titleAtoB}</span>`;
+        if(r.titleBtoA) h+=`<span class="pf-rel-title-badge" style="background:#F0F4FF;color:#7DA2FF;">상대 ➔ 나: ${r.titleBtoA}</span>`;
+        h+=`</div></div>\n      </div>\n`;
+        if(r.summary) h+=`      <div class="pf-rel-sum">${boldify(r.summary)}</div>\n`;
+        if(r.aToB) h+=`      <div class="pf-rel-dir"><span class="pf-rel-tag">나 ➔ 상대</span><div>${boldify(r.aToB.replace(/\n/g,'<br>'))}</div></div>\n`;
+        if(r.bToA) h+=`      <div class="pf-rel-dir"><span class="pf-rel-tag" style="background:#3182F6;">상대 ➔ 나</span><div>${boldify(r.bToA.replace(/\n/g,'<br>'))}</div></div>\n`;
+        if(r.detail) h+=`      <div class="pf-rel-detail">${boldify(r.detail.replace(/\n/g,'<br>'))}</div>\n`;
+        h+=`    </div>\n`;
+      });
+      h+=`    </details>\n`;
+    }
+    h+=`  </div>\n`;
+  });
+
+  h+=`</div>\n\n<script>\nfunction pfAudio(btn,id){\n  var a=document.getElementById(id);\n  if(a.paused){\n    document.querySelectorAll('.pf-at').forEach(function(x){x.pause();});\n    document.querySelectorAll('.pf-voice-btn').forEach(function(b){b.classList.remove('playing');b.querySelector('.pf-vi').className='ti ti-microphone pf-vi';});\n    a.play();btn.classList.add('playing');btn.querySelector('.pf-vi').className='ti ti-microphone-filled pf-vi';\n  }else{\n    a.pause();btn.classList.remove('playing');btn.querySelector('.pf-vi').className='ti ti-microphone pf-vi';\n  }\n}\n<\/script>`;
+
+  document.getElementById('exportCode').value = css+'\n\n'+h;
+  document.getElementById('exportModal').style.display='flex';
+}
+
+function copyCode(){
+  const copyText = document.getElementById('exportCode');
+  copyText.select();
+  document.execCommand('copy');
+  
+  const btn = document.getElementById('copyBtn');
+  btn.innerText = '복사 완료!';
+  btn.style.background = '#4CAF50';
+  
+  setTimeout(() => {
+    btn.innerText = '복사하기';
+    btn.style.background = 'var(--text)';
+  }, 2000);
+}
+
+loadForm();
+renderPreview();
+</script>
+
+</body>
+</html>
